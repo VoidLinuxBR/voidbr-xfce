@@ -90,8 +90,11 @@ depends=(
 	voidbr-xfwm-axiom-theme   # Tema visual "axiom" para o window manager do XFCE
 	wireplumber               # Gerenciador de sessão para PipeWire
 	xauth                     # Gerenciamento de autenticação X11 (.Xauthority)
-	xdg-user-dirs             # Tool to help manage user directories
-	xdg-user-dirs-gtk         # GTK+ tool to help manage user directories
+  xdg-desktop-portal        # Camada de comunicação entre apps e o desktop
+  xdg-desktop-portal-gtk    # Implementação GTK do portal XDG
+  xdg-user-dirs             # Tool to help manage user directories
+  xdg-user-dirs-gtk         # GTK+ tool to help manage user directories
+  xdg-utils                 # Ferramentas de integração com a área de trabalho
 	xfce4                     # Meta-pacote do ambiente XFCE
 	xfce4-datetime-plugin     # Plugin de data/hora para o painel do XFCE
 	xfce4-dict                # Plugin de dicionário para o XFCE
@@ -104,6 +107,10 @@ depends=(
 	xorg-fonts                # Fontes do Xorg
 	xorg-server-xwayland      # Compatibilidade com apps X11 legados dentro do Wayland
 	xterm                     # Terminal X11 básico
+  qt5-wayland               # Cross-platform application and UI framework (QT5) - Wayland component
+  qt5ct                     # Qt5 Configuration Tool
+  qt6-wayland               # Cross-platform application and UI framework - Wayland
+  qt6ct                     # Qt6 Configuration Tool
 )
 backup=()
 
