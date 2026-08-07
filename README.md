@@ -1,3 +1,3 @@
-# voidbr-pkgfile
+# voidbr-xfce
 
-Template for VoidBR pkgmake/pkgfile packages
+VoidBR XFCE Meta Package
