@@ -15,102 +15,24 @@ source=("git+${url}.git")
 md5sums=('SKIP')
 makedepends=()
 depends=(
-	7zip                         # Compactador/descompactador de arquivos (formato 7z)
-	Adapta                       # Tema GTK
-	adwaita-icon-theme           # Tema de ícones padrão GNOME/GTK
-	adwaita-plus                 # Extensão do tema de ícones Adwaita
-	alsa-pipewire                # Compatibilidade ALSA sobre PipeWire
-	alsa-plugins-pulseaudio      # Plugin ALSA para redirecionar áudio ao PulseAudio/PipeWire
-	alsa-utils                   # Utilitários de linha de comando do ALSA
-	arc-theme                    # Tema GTK usado no visual do lightdm-gtk-greeter
-	chili-iso2usb                # Utilitário para gravar ISO em pendrive
-	dbus-elogind                 # Message bus system (variante elogind)
-	dbus-x11                     # Suporte a X11 para o dbus (dbus-launch)
-	dejavu-fonts-ttf             # Fonte usada no visual do lightdm-gtk-greeter
-	elogind                      # Gerenciador de login e sessões (seat management)
-	file-roller                  # Gerenciador de arquivos compactados (GTK)
-	firefox                      # Mozilla Firefox web browser
-	firefox-i18n-pt-BR           # Firefox Portuguese (Brazilian) language pack
-	font-awesome                 # Fontes de ícones para barras e interfaces
-	font-iosevka                 # Fonte monoespaçada
-	gdk-pixbuf                   # Biblioteca de carregamento de imagens (GTK)
-	gparted                      # Editor de partições gráfico
-	gst-plugins-bad1             # Plugins GStreamer (qualidade experimental)
-	gst-plugins-base1            # Plugins GStreamer (base)
-	gst-plugins-good1            # Plugins GStreamer (qualidade boa)
-	gst-plugins-ugly1            # Plugins GStreamer (licenciamento restrito)
-	gvfs                         # Camada de sistema de arquivos virtual (montagem de dispositivos)
-	gvfs-cdda                    # Suporte gvfs para CDs de áudio
-	gvfs-smb                     # Suporte gvfs para compartilhamentos SMB/Windows
-	inetutils                    # Utilitários de rede (telnet, ftp, etc.)
-	iputils                      # Utilitários de rede (ping, etc.)
-	labwc                        # Compositor Wayland recomendado pelo XFCE (substitui o xfwm4, que é X11-only)
-	libavif                      # Suporte a imagens no formato AVIF
-	libheif                      # Suporte a imagens no formato HEIF
-	libheif-pixbuf-loader        # Integração do libheif com o gdk-pixbuf
-	libjack-pipewire             # Compatibilidade JACK sobre PipeWire
-	libspa-bluetooth             # Suporte a Bluetooth para o PipeWire (SPA)
-	lightdm                      # Display manager
-	lightdm-gtk-greeter          # Tela de login (greeter) do lightdm
-	lightdm-gtk-greeter-settings # Configurador gráfico do greeter do lightdm
-	mate-calc                    # Calculadora do ambiente MATE
-	nerd-fonts-symbols-ttf       # Símbolos e ícones para fontes Nerd Font
-	network-manager-applet       # Ícone de bandeja para controlar conexões
-	noto-fonts-emoji             # Fontes de emoji da Google
-	octoxbps                     # Gerenciador de pacotes gráfico (xbps)
-	p7zip                        # Suporte adicional a formatos de arquivo compactado
-	papirus-icon-theme           # Tema de ícones usado no visual do lightdm-gtk-greeter
-	pasystray                    # Ícone de bandeja para controle de áudio (PulseAudio)
-	pavucontrol                  # Controlador de volume gráfico (PulseAudio/PipeWire)
-	pipewire                     # Servidor de áudio moderno
-	plank                        # Dock/lançador de aplicativos
-	polkit-elogind               # Daemon de autorização de privilégios (variante elogind)
-	pulseaudio                   # Servidor de áudio
-	pulseaudio-utils             # Utilitários de linha de comando do PulseAudio
-	terminus-font                # Fonte de console
-	Thunar                       # Gerenciador de arquivos (XFCE)
-	thunar-archive-plugin        # Integração de compactação no Thunar
-	thunar-volman                # Gerenciador de volumes removíveis do Thunar
-	ttf-jetbrains-mono-nerd      # Patched font JetBrains Mono from nerd fonts library
-	ttf-ubuntu-font-family       # Ubuntu font family
-	voidbr-base-config
-	voidbr-utils
-	sddm
-	voidbr-sddm-themes
-	voidbr-beauty-icons       # Tema de ícones VoidLinuxBR
+	voidbr-base-common
+	voidbr-xorg-common
+	voidbr-wayland-common
+	voidbr-gui-common
+	labwc                     # Compositor Wayland recomendado pelo XFCE (substitui o xfwm4, que é X11-only)
+	Thunar                    # Gerenciador de arquivos (XFCE)
+	thunar-archive-plugin     # Integração de compactação no Thunar
+	thunar-volman             # Gerenciador de volumes removíveis do Thunar
 	voidbr-dracula-theme      # Tema visual Dracula aplicado
-	voidbr-iso-writer         # Utilitário gráfico para gravar ISO em pendrive
-	voidbr-lightdm-themes     # Temas do lightdm para VoidLinuxBR
-	voidbr-plasma-config      # Configuração base do Plasma personalizada
 	voidbr-professional-theme # Tema visual "professional"
-	voidbr-tokyo-theme        # TokyoNight-Dark theme with icons, cursors, and wallpaper
-	voidbr-wallpapers         # Wallpapers for Void Linux BR
-	voidbr-webapps            # Atalhos de webapps VoidLinuxBR
 	voidbr-xfce-config        # Configuração base do XFCE personalizada
 	voidbr-xfwm-axiom-theme   # Tema visual "axiom" para o window manager do XFCE
-	wireplumber               # Gerenciador de sessão para PipeWire
-	xauth                     # Gerenciamento de autenticação X11 (.Xauthority)
-  xdg-desktop-portal        # Camada de comunicação entre apps e o desktop
-  xdg-desktop-portal-gtk    # Implementação GTK do portal XDG
-  xdg-user-dirs             # Tool to help manage user directories
-  xdg-user-dirs-gtk         # GTK+ tool to help manage user directories
-  xdg-utils                 # Ferramentas de integração com a área de trabalho
 	xfce4                     # Meta-pacote do ambiente XFCE
 	xfce4-datetime-plugin     # Plugin de data/hora para o painel do XFCE
 	xfce4-dict                # Plugin de dicionário para o XFCE
 	xfce4-plugins             # Plugins adicionais para o painel do XFCE
 	xfce4-pulseaudio-plugin   # Plugin de controle de áudio para o painel do XFCE
 	xfce4-screenshooter       # Utilitário de captura de tela do XFCE
-	xfce4-terminal            # Terminal padrão do XFCE
-	xorg                      # Servidor X completo + drivers + apps base
-	xorg-apps                 # Aplicativos utilitários do Xorg
-	xorg-fonts                # Fontes do Xorg
-	xorg-server-xwayland      # Compatibilidade com apps X11 legados dentro do Wayland
-	xterm                     # Terminal X11 básico
-  qt5-wayland               # Cross-platform application and UI framework (QT5) - Wayland component
-  qt5ct                     # Qt5 Configuration Tool
-  qt6-wayland               # Cross-platform application and UI framework - Wayland
-  qt6ct                     # Qt6 Configuration Tool
 )
 backup=()
 
