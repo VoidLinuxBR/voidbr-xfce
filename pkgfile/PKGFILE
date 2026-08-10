@@ -86,9 +86,6 @@ post_install() {
   voidbr-copy-skel-inc --user $user --force --quiet
 
   log "Ativando serviços"
-  vservice add dbus --quiet
-  vservice add rtkit --quiet
-  vservice add NetworkManager --quiet
   vservice add sddm --quiet
 
   log "Finalizando instalação"
