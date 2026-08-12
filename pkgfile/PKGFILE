@@ -79,16 +79,16 @@ pre_install() {
 }
 
 post_install() {
-  log "Aplicando configuracoes para $user"
-  # cd $user_home
-  # cp -Rpa /etc/skel/. .
-  # chown $user:$user . -R
-  voidbr-copy-skel-inc --user $user --force --quiet
+  if [ -n "$user" ] ; then
+    log "Aplicando configuracoes para $user"
+    voidbr-copy-skel-inc --user "$user" --force --quiet
+  fi
 
   log "Ativando serviços"
   vservice add sddm --quiet
 
   log "Finalizando instalação"
+  log "${YELLOW}Instalação completa. Reinicie o sistema...${RESET}"
 }
 
 pre_upgrade() {
