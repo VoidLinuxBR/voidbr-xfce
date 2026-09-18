@@ -23,7 +23,7 @@ depends=(
 	Thunar                    # Gerenciador de arquivos (XFCE)
 	thunar-archive-plugin     # Integração de compactação no Thunar
 	thunar-volman             # Gerenciador de volumes removíveis do Thunar
-	voidbr-dracula-theme      # Tema visual Dracula aplicado
+#	voidbr-dracula-theme      # Tema visual Dracula aplicado
 	voidbr-professional-theme # Tema visual "professional"
 	voidbr-xfce-config        # Configuração base do XFCE personalizada
 	voidbr-xfwm-axiom-theme   # Tema visual "axiom" para o window manager do XFCE
