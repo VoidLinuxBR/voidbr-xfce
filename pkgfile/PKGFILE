@@ -33,6 +33,7 @@ depends=(
 	xfce4-plugins             # Plugins adicionais para o painel do XFCE
 	xfce4-pulseaudio-plugin   # Plugin de controle de áudio para o painel do XFCE
 	xfce4-screenshooter       # Utilitário de captura de tela do XFCE
+  cortile                   # Linux auto tiling manager with hot corner support for EWMH compliant WMs
 )
 backup=()
 
