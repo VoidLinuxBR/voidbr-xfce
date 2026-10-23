@@ -34,6 +34,7 @@ depends=(
 	xfce4-pulseaudio-plugin   # Plugin de controle de áudio para o painel do XFCE
 	xfce4-screenshooter       # Utilitário de captura de tela do XFCE
   cortile                   # Linux auto tiling manager with hot corner support for EWMH compliant WMs
+  picom                     # Lightweight compositor for X11 (previously a compton fork)
   alsa-utils
 )
 backup=()
