@@ -91,9 +91,10 @@ post_install() {
 			# resposta em 30s, não altera nada do que o usuário já tem.
 			if [ "${update:-}" = "yes" ]; then
 				resp=""
+				# O xbps roda este script com /bin/sh (dash), que não tem
+				# "read -t/-p"; a pergunta com tempo limite vai pelo bash.
 				if [ -t 0 ] && [ -t 1 ]; then
-					read -r -t 30 -p "Aplicar as configuracoes padrao do VoidBR para $user? (backup automatico) [s/N]: " resp || true
-					echo
+					resp=$(bash -c 'read -r -t 30 -p "Aplicar as configuracoes padrao do VoidBR para $1? (backup automatico) [s/N]: " r >&2; echo >&2; printf "%s" "$r"' _ "$user") || true
 				fi
 			fi
 
