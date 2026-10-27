@@ -84,7 +84,7 @@ post_install() {
 
 	if [ -z "${VOIDBR_INSTALLER:-}" ]; then
 		if [ -n "$user" ]; then
-			local resp="s"
+			local resp="t" prompt
 
 			# Instalação nova: copia tudo (o que for diferente vai para backup).
 			# Atualização: pergunta, se houver terminal. Sem terminal, ou sem
@@ -92,14 +92,17 @@ post_install() {
 			if [ "${update:-}" = "yes" ]; then
 				resp=""
 				# O xbps roda este script com /bin/sh (dash), que não tem
-				# "read -t/-p"; a pergunta com tempo limite vai pelo bash.
-				if [ -t 0 ] && [ -t 1 ]; then
-					resp=$(bash -c 'read -r -t 30 -p "Aplicar as configuracoes padrao do VoidBR para $1? (backup automatico) [s/N]: " r >&2; echo >&2; printf "%s" "$r"' _ "$user") || true
+				# "read -t/-p"; a pergunta com tempo limite vai pelo bash,
+				# lendo direto do terminal. Prefixo no mesmo formato do log().
+				if [ -t 1 ] && { : </dev/tty; } 2>/dev/null; then
+					prompt=$(printf '%s[*]%s %s - %s' "$CYAN" "${BLACK}$pkgname" "${RST}" "${CYAN}")
+					prompt="${prompt}Configurações de $user: aplicar [t]odas (com backup) ou só as [N]ovas? ${RESET}"
+					resp=$(bash -c 'read -r -t 30 -p "$1" r </dev/tty >&2 || echo >&2; printf "%s" "$r"' _ "$prompt") || true
 				fi
 			fi
 
 			case "$resp" in
-				s | S | sim | Sim | SIM)
+				t | T | todas | Todas | TODAS)
 					# Substitui o que for diferente, com backup em ~/.voidbr-skel-backup-*
 					log "Aplicando configuracoes padrao para $user"
 					/usr/local/bin/voidbr-copy-skel-inc --user "$user" --force --quiet || true
