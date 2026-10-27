@@ -84,8 +84,10 @@ post_install() {
 
 	if [ -z "${VOIDBR_INSTALLER:-}" ]; then
 		if [ -n "$user" ]; then
-			log "Aplicando configuracoes para $user"
-			/usr/local/bin/voidbr-copy-skel-inc --user "$user" --force --quiet || true
+			# --only-new: copia só o que ainda não existe no HOME.
+			# Nunca altera configuração existente do usuário (nem no upgrade).
+			log "Aplicando novas configuracoes para $user"
+			/usr/local/bin/voidbr-copy-skel-inc --user "$user" --only-new --quiet || true
 		fi
 
 		log "Ativando serviços"
