@@ -111,8 +111,24 @@ post_install() {
 			esac
 		fi
 
-		log "Ativando serviços"
-		/usr/local/bin/vservice add sddm --quiet || true
+		# Login manager: só na instalação nova e só se nenhum outro estiver
+		# ativo. No upgrade não mexe (o usuário pode ter trocado ou removido).
+		if [ "${update:-}" != "yes" ]; then
+			local dm outro_dm=""
+			for dm in gdm lightdm lxdm slim xdm greetd ly emptty nodm entrance lemurs; do
+				if [ -e "/var/service/$dm" ] || [ -L "/var/service/$dm" ]; then
+					outro_dm="$dm"
+					break
+				fi
+			done
+
+			if [ -n "$outro_dm" ]; then
+				log "Login manager '$outro_dm' ja ativo, sddm nao sera ativado"
+			else
+				log "Ativando serviços"
+				/usr/local/bin/vservice add sddm --quiet || true
+			fi
+		fi
 	fi
 
 	log "${YELLOW}Instalação completa. Reinicie o sistema...${RESET}"
