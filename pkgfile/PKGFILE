@@ -84,10 +84,31 @@ post_install() {
 
 	if [ -z "${VOIDBR_INSTALLER:-}" ]; then
 		if [ -n "$user" ]; then
-			# --only-new: copia só o que ainda não existe no HOME.
-			# Nunca altera configuração existente do usuário (nem no upgrade).
-			log "Aplicando novas configuracoes para $user"
-			/usr/local/bin/voidbr-copy-skel-inc --user "$user" --only-new --quiet || true
+			local resp="s"
+
+			# Instalação nova: copia tudo (o que for diferente vai para backup).
+			# Atualização: pergunta, se houver terminal. Sem terminal, ou sem
+			# resposta em 30s, não altera nada do que o usuário já tem.
+			if [ "${update:-}" = "yes" ]; then
+				resp=""
+				if [ -t 0 ] && [ -t 1 ]; then
+					read -r -t 30 -p "Aplicar as configuracoes padrao do VoidBR para $user? (backup automatico) [s/N]: " resp || true
+					echo
+				fi
+			fi
+
+			case "$resp" in
+				s | S | sim | Sim | SIM)
+					# Substitui o que for diferente, com backup em ~/.voidbr-skel-backup-*
+					log "Aplicando configuracoes padrao para $user"
+					/usr/local/bin/voidbr-copy-skel-inc --user "$user" --force --quiet || true
+					;;
+				*)
+					# Copia só o que ainda não existe no HOME
+					log "Aplicando novas configuracoes para $user"
+					/usr/local/bin/voidbr-copy-skel-inc --user "$user" --only-new --quiet || true
+					;;
+			esac
 		fi
 
 		log "Ativando serviços"
