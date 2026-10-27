@@ -114,6 +114,11 @@ post_install() {
 					/usr/local/bin/voidbr-copy-skel-inc --user "$user" --only-new --quiet || true
 					;;
 			esac
+
+			# Atualização: lembra onde ficam os ajustes visuais
+			if [ "${update:-}" = "yes" ]; then
+				log "Efeitos, transparência, mosaico e moldura: voidbr-xfce-tweaks"
+			fi
 		fi
 
 		# Login manager:
