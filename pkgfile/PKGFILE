@@ -37,6 +37,7 @@ depends=(
   picom                     # Lightweight compositor for X11 (previously a compton fork)
   voidbr-mac-themes         # Temas estilo macOS (claro/escuro, 9 cores) do Visual Mac do voidbr-xfce-tweaks
   xfce4-docklike-plugin     # Dock do layout Mac (painel), funciona em X11 e Wayland
+  plank                     # Dock fora do layout Mac (no Wayland via XWayland, pelo voidbr-plank)
   alsa-utils
 )
 backup=()
