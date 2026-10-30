@@ -1,0 +1,177 @@
+# Maintainer: Vilmar Catafesta <vcatafesta@gmail.com>
+
+pkgname=voidbr-xfce
+pkgdesc="VoidBR XFCE Meta Package"
+pkgver=$(date +%Y%m%d)
+pkgrel=$(date +%H%M)
+provides=()  # "eu SOU o $pkgname pkg1, pra quem depender deles"
+replaces=()  # "remove o pkg1 pkg2 antigo automaticamente quando eu instalar"
+conflicts=() # "nunca me deixe coexistir com o pkg1 pkg2 original"
+arch=('any')
+license=('MIT')
+#url="ssh://git@github.com/voidlinuxbr/${pkgname}"
+url="https://github.com/voidlinuxbr/${pkgname}"
+source=("git+${url}.git")
+md5sums=('SKIP')
+makedepends=()
+depends=(
+	voidbr-base-common
+	voidbr-xorg-common
+	voidbr-wayland-common
+	voidbr-gui-common
+	labwc                 # Compositor Wayland recomendado pelo XFCE (substitui o xfwm4, que é X11-only)
+	Thunar                # Gerenciador de arquivos (XFCE)
+	thunar-archive-plugin # Integração de compactação no Thunar
+	thunar-volman         # Gerenciador de volumes removíveis do Thunar
+	#	voidbr-dracula-theme      # Tema visual Dracula aplicado
+	voidbr-professional-theme # Tema visual "professional"
+	voidbr-xfce-config        # Configuração base do XFCE personalizada
+	voidbr-xfwm-axiom-theme   # Tema visual "axiom" para o window manager do XFCE
+	xfce4                     # Meta-pacote do ambiente XFCE
+	xfce4-datetime-plugin     # Plugin de data/hora para o painel do XFCE
+	xfce4-dict                # Plugin de dicionário para o XFCE
+	xfce4-plugins             # Plugins adicionais para o painel do XFCE
+	xfce4-pulseaudio-plugin   # Plugin de controle de áudio para o painel do XFCE
+	xfce4-screenshooter       # Utilitário de captura de tela do XFCE
+  cortile                   # Linux auto tiling manager with hot corner support for EWMH compliant WMs
+  picom                     # Lightweight compositor for X11 (previously a compton fork)
+  voidbr-mac-themes         # Temas estilo macOS (claro/escuro, 9 cores) do Visual Mac do voidbr-xfce-tweaks
+  xfce4-docklike-plugin     # Dock do layout Mac (painel), funciona em X11 e Wayland
+  plank                     # Dock fora do layout Mac (no Wayland via XWayland, pelo voidbr-plank)
+  alsa-utils
+)
+backup=()
+
+package() {
+	# Verify default folder
+	if [ -d "${srcdir}/${pkgname}/${pkgname}" ]; then
+		InternalDir="${srcdir}/${pkgname}/${pkgname}"
+	elif [ -d "${srcdir}/${pkgname}" ]; then
+		InternalDir="${srcdir}/${pkgname}"
+	else
+		#local
+		InternalDir="${WORKDIR}"
+	fi
+
+	cd "${InternalDir}"
+	# Copiar a estrutura de /etc, /usr e /opt para /
+	local dirs=("boot" "etc" "opt" "usr" "var")
+	for dir in "${dirs[@]}"; do
+		if [ -d "${InternalDir}/${dir}" ]; then
+			cp -a "${InternalDir}/${dir}" "${pkgdir}/"
+		fi
+	done
+
+	# Install license file if present
+	[ -f "LICENSE" ] && install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+	# Install documentation if present
+	[ -f "README.md" ] && install -Dm644 README.md "${pkgdir}/usr/share/doc/${pkgname}/README.md"
+
+}
+
+pre_install() {
+	log "Iniciando instalação"
+}
+
+post_install() {
+	if [ "${update:-}" = "yes" ]; then
+		log "Finalizando upgrade"
+	else
+		log "Finalizando instalação"
+	fi
+
+	if [ -n "${MKISO_BUILD:-}" ]; then
+		echo "${YELLOW}[-]${RESET} Build de ISO detectado (MKISO_BUILD) — pulando."
+		return 0
+	fi
+
+	if [ -z "${VOIDBR_INSTALLER:-}" ]; then
+		if [ -n "$user" ]; then
+			local resp="t" prompt
+
+			# Instalação nova: copia tudo (o que for diferente vai para backup).
+			# Atualização: pergunta, se houver terminal. Sem terminal, ou sem
+			# resposta em 30s, não altera nada do que o usuário já tem.
+			if [ "${update:-}" = "yes" ]; then
+				resp=""
+				# O xbps roda este script com /bin/sh (dash), que não tem
+				# "read -t/-p"; a pergunta com tempo limite vai pelo bash,
+				# lendo direto do terminal. Prefixo no mesmo formato do log().
+				if [ -t 1 ] && { : </dev/tty; } 2>/dev/null; then
+					# Pergunta em branco, teclas em amarelo (destaca das linhas do log)
+					prompt=$(printf '%s[*]%s %s - %s' "$CYAN" "${BLACK}$pkgname" "${RST}" "${WHITE}")
+					prompt="${prompt}Configurações de $user: aplicar [${YELLOW}t${WHITE}]odas (com backup) ou só as [${YELLOW}N${WHITE}]ovas? ${RESET}"
+					resp=$(bash -c 'read -r -t 30 -p "$1" r </dev/tty >&2 || echo >&2; printf "%s" "$r"' _ "$prompt") || true
+				fi
+			fi
+
+			case "$resp" in
+				t | T | todas | Todas | TODAS)
+					# Substitui o que for diferente, com backup em ~/.voidbr-skel-backup-*
+					log "Aplicando configuracoes padrao para $user"
+					/usr/local/bin/voidbr-copy-skel-inc --user "$user" --force --quiet || true
+					;;
+				*)
+					# Copia só o que ainda não existe no HOME
+					log "Aplicando novas configuracoes para $user"
+					/usr/local/bin/voidbr-copy-skel-inc --user "$user" --only-new --quiet || true
+					;;
+			esac
+
+			# Atualização: lembra onde ficam os ajustes visuais
+			if [ "${update:-}" = "yes" ]; then
+				log "Efeitos, transparência, mosaico e moldura: voidbr-xfce-tweaks"
+			fi
+		fi
+
+		# Login manager:
+		#   instalação nova: ativa o sddm se nenhum login manager estiver ativo
+		#   atualização: se nenhum estiver ativo, pergunta (sem terminal ou sem
+		#   resposta em 30s, não ativa). Quem responder "n" não é perguntado de novo.
+		local dm dm_ativo="" ativar_dm="s" sem_dm="/var/lib/voidbr/sem-login-manager"
+		for dm in sddm gdm lightdm lxdm slim xdm greetd ly emptty nodm entrance lemurs; do
+			if [ -e "/var/service/$dm" ] || [ -L "/var/service/$dm" ]; then
+				dm_ativo="$dm"
+				break
+			fi
+		done
+
+		if [ -n "$dm_ativo" ]; then
+			[ "$dm_ativo" != "sddm" ] && log "Login manager '$dm_ativo' ja ativo, sddm nao sera ativado"
+			ativar_dm=""
+		elif [ "${update:-}" = "yes" ]; then
+			ativar_dm=""
+			if [ ! -e "$sem_dm" ] && [ -t 1 ] && { : </dev/tty; } 2>/dev/null; then
+				prompt=$(printf '%s[*]%s %s - %s' "$CYAN" "${BLACK}$pkgname" "${RST}" "${WHITE}")
+				prompt="${prompt}Nenhum login manager ativo: ativar o [${YELLOW}s${WHITE}]ddm ou [${YELLOW}N${WHITE}]ão? ${RESET}"
+				ativar_dm=$(bash -c 'read -r -t 30 -p "$1" r </dev/tty >&2 || echo >&2; printf "%s" "$r"' _ "$prompt") || true
+				case "$ativar_dm" in
+					s | S | sim | Sim | SIM | sddm) ativar_dm="s" ;;
+					n | N | nao | não | Nao | Não | NAO | NÃO)
+						# Escolha explícita: não perguntar nos próximos upgrades
+						mkdir -p "${sem_dm%/*}" && : >"$sem_dm"
+						log "Login manager nao sera ativado (para ativar: vservice add sddm)"
+						ativar_dm=""
+						;;
+					*) ativar_dm="" ;;
+				esac
+			fi
+		fi
+
+		if [ "$ativar_dm" = "s" ]; then
+			rm -f "$sem_dm"
+			log "Ativando serviços"
+			/usr/local/bin/vservice add sddm --quiet || true
+		fi
+	fi
+
+	log "${YELLOW}Instalação completa. Reinicie o sistema...${RESET}"
+}
+
+pre_upgrade() {
+	log "Iniciando upgrade"
+}
+
+post_upgrade() {
+	post_install
+}

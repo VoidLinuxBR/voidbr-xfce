@@ -15,30 +15,104 @@ source=("git+${url}.git")
 md5sums=('SKIP')
 makedepends=()
 depends=(
-	voidbr-base-common
-	voidbr-xorg-common
-	voidbr-wayland-common
-	voidbr-gui-common
-	labwc                 # Compositor Wayland recomendado pelo XFCE (substitui o xfwm4, que é X11-only)
-	Thunar                # Gerenciador de arquivos (XFCE)
-	thunar-archive-plugin # Integração de compactação no Thunar
-	thunar-volman         # Gerenciador de volumes removíveis do Thunar
-	#	voidbr-dracula-theme      # Tema visual Dracula aplicado
+	# --- Base do VoidBR ---
+	voidbr-base-common # Base: base-config, utils, NetworkManager, firmware etc.
+
+	# --- XFCE ---
+	xfce4                    # Meta do Void: panel, session, settings, xfwm4, xfdesktop, Thunar,
+	                         # thunar-volman, tumbler, notifyd, screensaver, power-manager,
+	                         # terminal, taskmanager, mousepad, parole, ristretto, xfce-polkit,
+	                         # upower, elogind, xdg-user-dirs-gtk
+	thunar-archive-plugin    # "Extrair aqui" no Thunar
+	file-roller              # Motor do thunar-archive-plugin
+	xfce4-whiskermenu-plugin # Menu do painel
+	xfce4-pulseaudio-plugin  # Volume do painel
+	xfce4-docklike-plugin    # Dock do Visual Mac (X11 e Wayland)
+	xfce4-clipman-plugin     # Autostart do clipman (voidbr-base-config)
+	xfce4-screenshooter      # Atalhos de captura de tela
+	menulibre                # Botão "Editar menu" do Whisker
+	mugshot                  # Botão "Perfil" do Whisker
+	voidbr-xfce-config       # Skel e scripts do XFCE VoidBR
+	python3-gobject          # voidbr-xfce-tweaks (GTK4)
+	gtk4                     # voidbr-xfce-tweaks
+
+	# --- Visual ---
+	voidbr-mac-themes         # Visual Mac (GTK, xfwm4, labwc)
+	voidbr-tokyo-theme        # Tokyonight-Dark-Theme, Tokyonight-Dark-Icons, Nordic-cursors
 	voidbr-professional-theme # Tema visual "professional"
-	voidbr-xfce-config        # Configuração base do XFCE personalizada
-	voidbr-xfwm-axiom-theme   # Tema visual "axiom" para o window manager do XFCE
-	xfce4                     # Meta-pacote do ambiente XFCE
-	xfce4-datetime-plugin     # Plugin de data/hora para o painel do XFCE
-	xfce4-dict                # Plugin de dicionário para o XFCE
-	xfce4-plugins             # Plugins adicionais para o painel do XFCE
-	xfce4-pulseaudio-plugin   # Plugin de controle de áudio para o painel do XFCE
-	xfce4-screenshooter       # Utilitário de captura de tela do XFCE
-  cortile                   # Linux auto tiling manager with hot corner support for EWMH compliant WMs
-  picom                     # Lightweight compositor for X11 (previously a compton fork)
-  voidbr-mac-themes         # Temas estilo macOS (claro/escuro, 9 cores) do Visual Mac do voidbr-xfce-tweaks
-  xfce4-docklike-plugin     # Dock do layout Mac (painel), funciona em X11 e Wayland
-  plank                     # Dock fora do layout Mac (no Wayland via XWayland, pelo voidbr-plank)
-  alsa-utils
+	voidbr-xfwm-axiom-theme   # Tema "axiom" do xfwm4
+	voidbr-beauty-icons       # Tema de ícones VoidBR
+	voidbr-wallpapers         # Papel de parede (voidbr-wallpaper.avif)
+	adwaita-icon-theme        # Ícones de reserva (os Tokyonight herdam de "gnome")
+	libavif                   # Abre o .avif do papel de parede (gdk-pixbuf)
+	plank                     # Dock fora do Visual Mac (no Wayland via XWayland, pelo voidbr-plank)
+	cantarell-fonts           # Fonte da interface (Cantarell 9)
+	dejavu-fonts-ttf          # "Monospace" do terminal
+	noto-fonts-ttf
+	noto-fonts-emoji
+	nerd-fonts-symbols-ttf
+
+	# --- Sessão e login ---
+	sddm                  # Login (o post_install ativa o sddm)
+	voidbr-sddm-themes    # Temas do sddm VoidBR
+	voidbr-lightdm-themes # Temas do lightdm VoidBR
+	dbus-elogind
+	polkit-elogind
+	gnome-keyring # Senhas (navegador, Wi-Fi)
+
+	# --- X11 ---
+	xorg             # Servidor X, drivers de entrada e vídeo, xkill, xrdb...
+	xinit            # startx (o skel tem .xinitrc)
+	dbus-x11         # dbus-launch do startxfce4
+	mesa-dri
+	mesa-nouveau-dri
+	mesa-vaapi
+	mesa-demos       # glxinfo: o voidbr-picom decide o compositor
+	picom            # Compositor no X11 (blur, sombras, cantos)
+	cortile          # Mosaico (desligado de fábrica; liga no voidbr-xfce-tweaks)
+
+	# --- Wayland ---
+	labwc                  # Compositor do XFCE em Wayland (substitui o xfwm4, que é X11-only)
+	xorg-server-xwayland   # Apps X11 e o Plank no Wayland
+	qt5-wayland
+	qt6-wayland
+	wl-clipboard
+	xdg-desktop-portal
+	xdg-desktop-portal-gtk # color-scheme (claro/escuro) e seletor de arquivos
+	xdg-desktop-portal-wlr # Captura/compartilhamento de tela (portals.conf: gtk;wlr)
+
+	# --- Áudio (PipeWire; o skel já usa o pipewire-pulse) ---
+	pipewire
+	wireplumber
+	alsa-pipewire
+	libjack-pipewire
+	libspa-bluetooth # Áudio Bluetooth
+	pavucontrol      # "Mixer" do plugin de volume
+	alsa-utils       # aplay do som de início
+
+	# --- Rede, Bluetooth e discos ---
+	network-manager-applet # Ícone de rede no systray
+	bluez
+	blueberry              # Lançador de Bluetooth do painel
+	gnome-bluetooth1       # Usado pelo blueberry
+	gvfs                   # Lixeira (trash:///) e Rede no Thunar
+	gvfs-mtp
+	gvfs-smb
+	gvfs-afc
+	udisks2                # Montar pendrives
+
+	# --- Apps ---
+	firefox            # Navegador padrão (helpers.rc) e lançador do painel
+	firefox-i18n-pt-BR
+	brave-bin          # Fixado na dock do Visual Mac
+	octoxbps           # Autostart do octoxbps-notifier (voidbr-base-config)
+	gparted
+	mpv
+	chili-iso2usb
+	voidbr-iso-writer
+	voidbr-webapps
+	xdg-utils
+	xdg-user-dirs # O voidbr-mac-sessao usa xdg-user-dir
 )
 backup=()
 
