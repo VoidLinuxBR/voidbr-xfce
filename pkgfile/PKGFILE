@@ -165,17 +165,21 @@ post_install() {
 		# que é o pacote que traz o skel (assim ela roda também quando só ele é atualizado).
 
 		# Login manager: ativo = tem link em /var/service (instalado só em /etc/sv não conta).
-		# Se já tiver um ativo, não mexe; se não tiver, ativa o sddm.
-		local dm ativar_dm=true
-		for dm in sddm gdm lightdm lxdm slim xdm greetd ly emptty nodm entrance lemurs; do
-			if [ -x "/var/service/$dm/run" ]; then
+		# Fica só o primeiro ativo (na ordem abaixo); os demais são desativados.
+		# Se nenhum estiver ativo, ativa o sddm.
+		local dm primeiro=""
+		for dm in sddm lightdm gdm greetd lxdm; do
+			[ -x "/var/service/$dm/run" ] || continue
+			if [ -z "$primeiro" ]; then
+				primeiro="$dm"
 				log "Login manager '$dm' ja ativo"
-				ativar_dm=false
-				break
+			else
+				log "Desativando o login manager '$dm' (ja tem o '$primeiro' ativo)"
+				/usr/local/bin/vservice rm "$dm" --quiet || true
 			fi
 		done
 
-		if $ativar_dm; then
+		if [ -z "$primeiro" ]; then
 			log "Ativando o sddm"
 			/usr/local/bin/vservice add sddm --quiet || true
 		fi
