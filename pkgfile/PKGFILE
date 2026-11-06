@@ -165,18 +165,48 @@ post_install() {
 		# que é o pacote que traz o skel (assim ela roda também quando só ele é atualizado).
 
 		# Login manager: ativo = tem link em /var/service (instalado só em /etc/sv não conta).
-		# Fica só o primeiro ativo (na ordem abaixo); os demais são desativados.
-		# Se nenhum estiver ativo, ativa o sddm.
-		local dm primeiro=""
-		for dm in sddm lightdm gdm greetd lxdm; do
-			[ -x "/var/service/$dm/run" ] || continue
-			if [ -z "$primeiro" ]; then
-				primeiro="$dm"
-				log "Login manager '$dm' ja ativo"
-			else
-				log "Desativando o login manager '$dm' (ja tem o '$primeiro' ativo)"
+		# Mantém o da sessão gráfica aberta (para não derrubar quem está logado); se não
+		# houver sessão gráfica, mantém o primeiro ativo na ordem abaixo. Os demais ativos
+		# são desativados. Se nenhum estiver ativo, ativa o sddm.
+		local s srv dm manter=""
+		if command -v loginctl >/dev/null 2>&1; then
+			for s in $(loginctl list-sessions --no-legend 2>/dev/null | awk '{print $1}'); do
+				[ "$(loginctl show-session "$s" -p Class --value 2>/dev/null)" = user ] || continue
+				case "$(loginctl show-session "$s" -p Type --value 2>/dev/null)" in
+				x11 | wayland) ;;
+				*) continue ;;
+				esac
+				srv=$(loginctl show-session "$s" -p Service --value 2>/dev/null)
+				case "$srv" in gdm-*) srv=gdm ;; esac
+				if [ -n "$srv" ] && [ -x "/var/service/$srv/run" ]; then
+					manter="$srv"
+					log "Sessão gráfica aberta pelo login manager '$srv'"
+					break
+				fi
+			done
+		fi
+
+		if [ -z "$manter" ]; then
+			for dm in sddm lightdm gdm greetd lxdm; do
+				if [ -x "/var/service/$dm/run" ]; then
+					manter="$dm"
+					break
+				fi
+			done
+		fi
+
+		if [ -z "$manter" ]; then
+			log "Ativando o sddm"
+			/usr/local/bin/vservice add sddm --quiet || true
+		else
+			log "Login manager '$manter' ja ativo"
+			for dm in sddm lightdm gdm greetd lxdm; do
+				[ "$dm" = "$manter" ] && continue
+				[ -x "/var/service/$dm/run" ] || continue
+				log "Desativando o login manager '$dm' (fica o '$manter')"
 				/usr/local/bin/vservice rm "$dm" --quiet || true
-			fi
+			done
+		fi
 		done
 
 		if [ -z "$primeiro" ]; then
