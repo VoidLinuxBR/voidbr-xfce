@@ -207,12 +207,6 @@ post_install() {
 				/usr/local/bin/vservice rm "$dm" --quiet || true
 			done
 		fi
-		done
-
-		if [ -z "$primeiro" ]; then
-			log "Ativando o sddm"
-			/usr/local/bin/vservice add sddm --quiet || true
-		fi
 	fi
 
 	log "${YELLOW}Instalação completa. Reinicie o sistema...${RESET}"
